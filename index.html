@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo MVC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        p, li {
+            color: #555;
+        }
+        .code {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Radhames A. Gonzalez 100446113</h1>
+
+
+    <h1>Modelo MVC</h1>
+    <p>
+        El Modelo-Vista-Controlador (MVC) es un patrón de arquitectura de software ampliamente utilizado para organizar y estructurar aplicaciones.
+         Permite separar la lógica del negocio de la interfaz de usuario, facilitando la escalabilidad, el mantenimiento y el trabajo en equipo.
+         
+    </p>
+
+    <img src="https://learn.microsoft.com/es-es/aspnet/mvc/overview/older-versions-1/overview/asp-net-mvc-overview/_static/image1.png" >
+
+    <h2>Componentes del Modelo MVC</h2>
+    <ul>
+        <li>
+            <strong>Modelos:</strong> Los objetos modelo implementan la lógica del dominio de datos de la aplicación.
+             Por ejemplo, un objeto <em>Producto</em> puede interactuar con una base de datos para recuperar, procesar y actualizar información.
+        </li>
+        <li>
+            <strong>Vistas:</strong> Las vistas presentan la interfaz de usuario, generalmente basada en los datos del modelo.
+             Por ejemplo, una vista puede mostrar los detalles de un producto en un formulario.
+        </li>
+        <li>
+            <strong>Controladores:</strong> Los controladores gestionan la interacción del usuario, trabajan con el modelo y seleccionan la vista adecuada para representar los datos.
+        </li>
+    </ul>
+
+    <h2>Ventajas de MVC</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Ventaja</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>División de la complejidad</td>
+                <td>Separa la aplicación en modelo, vista y controlador.</td>
+            </tr>
+            <tr>
+                <td>Control total</td>
+                <td>No depende del estado de vista ni de formularios en servidor.</td>
+            </tr>
+            <tr>
+                <td>Infraestructura de enrutamiento avanzada</td>
+                <td>Permite diseñar aplicaciones con controladores frontales únicos.</td>
+            </tr>
+            <tr>
+                <td>Desarrollo controlado por pruebas</td>
+                <td>Mayor compatibilidad con TDD.</td>
+            </tr>
+            <tr>
+                <td>Trabajo en equipo</td>
+                <td>Ideal para equipos grandes de desarrolladores y diseñadores.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Ejemplo: Sistema de Notas Estudiantil</h2>
+    <h3>Modelo</h3>
+    <pre class="code">
+public class Estudiante {
+    private String nombre;
+    private double nota;
+
+    public Estudiante(String nombre, double nota) {
+        this.nombre = nombre;
+        this.nota = nota;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public double getNota() {
+        return nota;
+    }
+}
+    </pre>
+
+    <h3>Vista</h3>
+    <pre class="code">
+import javax.swing.*;
+public class VistaNotas extends JFrame {
+    private JTextField campoNombre = new JTextField(20);
+    private JTextField campoNota = new JTextField(5);
+    private JButton botonAgregar = new JButton("Agregar");
+    private JTextArea areaEstudiantes = new JTextArea(10, 30);
+
+    public VistaNotas() {
+        setTitle("Gestión de Notas");
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+        add(new JLabel("Nombre:"));
+        add(campoNombre);
+        add(new JLabel("Nota:"));
+        add(campoNota);
+        add(botonAgregar);
+        add(new JScrollPane(areaEstudiantes));
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pack();
+    }
+
+    public JTextField getCampoNombre() {
+        return campoNombre;
+    }
+
+    public JTextField getCampoNota() {
+        return campoNota;
+    }
+
+    public JButton getBotonAgregar() {
+        return botonAgregar;
+    }
+
+    public JTextArea getAreaEstudiantes() {
+        return areaEstudiantes;
+    }
+}
+    </pre>
+
+    <h3>Controlador</h3>
+    <pre class="code">
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+public class ControladorNotas {
+    private VistaNotas vista;
+    private ArrayList<Estudiante> estudiantes = new ArrayList<>();
+
+    public ControladorNotas(VistaNotas vista) {
+        this.vista = vista;
+        this.vista.getBotonAgregar().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                agregarEstudiante();
+            }
+        });
+    }
+
+    private void agregarEstudiante() {
+        String nombre = vista.getCampoNombre().getText();
+        double nota = Double.parseDouble(vista.getCampoNota().getText());
+        estudiantes.add(new Estudiante(nombre, nota));
+        actualizarVista();
+    }
+
+    private void actualizarVista() {
+        StringBuilder texto = new StringBuilder();
+        for (Estudiante estudiante : estudiantes) {
+            texto.append(estudiante.getNombre()).append(" - ").append(estudiante.getNota()).append("\n");
+        }
+        vista.getAreaEstudiantes().setText(texto.toString());
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        VistaNotas vista = new VistaNotas();
+        new ControladorNotas(vista);
+        vista.setVisible(true);
+    }
+}
+    </pre>
+</body>
+</html>
